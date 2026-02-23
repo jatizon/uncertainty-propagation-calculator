@@ -2,7 +2,7 @@
 
 A small web tool for **propagation of uncertainty (POU)** in expressions: you enter a formula and your measured variables (value ± uncertainty), and it computes the result and its combined uncertainty. No more doing derivatives by hand.
 
-**Live app:** [https://josalbertotizon.github.io/uncertainty-propagation-calculator/](https://josalbertotizon.github.io/uncertainty-propagation-calculator/)
+**Live app:** [https://jatizon.github.io/uncertainty-propagation-calculator/](https://jatizon.github.io/uncertainty-propagation-calculator/)
 
 ---
 

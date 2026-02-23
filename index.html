@@ -2,37 +2,236 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="data:,">
+    <script src="config.js"></script>
     <script src="main.js" type="module" defer></script>
-    <title>POU calculator</title>
+    <title>Uncertainty Propagation Calculator</title>
   </head>
   <body>
-    <div>
-    <div class="header">Uncertainty Propagation Calculator</div>
-      <div class="var-boxes-container">
-        <div class="var-box">
-          <button class="remove-variable">-</button>
-          <div class="var-box-right">
-            <div class="variable">
-              <input class="variable-name" type="text" value="Name">
-              <input class="variable-value" type="text" value="Value">
-              <input class="variable-error" type="text" value="Error">
+    <div class="app">
+      <div class="app__grid">
+        <header class="hero">
+          <div class="hero__content">
+            <div class="hero__text">
+              <h1 class="hero__title">
+                <span class="hero__title-gradient">Uncertainty Propagation</span>
+              </h1>
+              <p class="hero__desc">Combine measured values and their uncertainties into one result—no hand derivatives.</p>
             </div>
-            <button class="add-variable">+</button>
+            <nav class="hero__actions">
+              <a href="https://github.com/jatizon" target="_blank" rel="noopener noreferrer" class="hero-btn hero-btn--github">
+                <img class="hero-btn__icon" src="static/github.svg" width="18" height="18" alt="">
+                <span>GitHub</span>
+              </a>
+              <button type="button" class="hero-btn hero-btn--coffee js-open-support-modal" aria-label="Support the project">
+                <img class="hero-btn__icon" src="static/coffee.svg" width="18" height="18" alt="">
+                <span>Buy me a coffee</span>
+              </button>
+            </nav>
+          </div>
+        </header>
+
+        <div id="support-modal" class="support-modal" role="dialog" aria-modal="true" aria-labelledby="support-modal-title" aria-hidden="true">
+          <div class="support-modal__backdrop js-close-support-modal"></div>
+          <div class="support-modal__box">
+            <div class="support-modal__header">
+              <h2 id="support-modal-title" class="support-modal__title">Support the project</h2>
+              <button type="button" class="support-modal__close js-close-support-modal" aria-label="Close">&times;</button>
+            </div>
+            <div class="support-modal__choice" id="support-modal-choice">
+              <p class="support-modal__text">Choose how you'd like to support:</p>
+              <div class="support-modal__options">
+                <a href="#" id="support-stripe-general-link" target="_blank" rel="noopener noreferrer" class="support-option support-option--stripe">
+                  <span class="support-option__icon"><img src="static/stripe.svg" width="28" height="28" alt=""></span>
+                  <span class="support-option__label">Pay with Card, Apple Pay, Google Pay… (USD/BRL)</span>
+                  <span class="support-option__desc">Card, Apple Pay, Link</span>
+                </a>
+                <div class="support-option support-option--pix support-option--unavailable" aria-disabled="true">
+                  <span class="support-option__icon support-option__icon--pix"><img src="static/pix.svg" width="28" height="28" alt=""></span>
+                  <span class="support-option__label">Pix (Brazil)</span>
+                  <span class="support-option__desc">Ainda não disponível</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+
+        <div class="workspace">
+          <div class="workspace__inputs">
+            <section class="card card--vars">
+              <div class="card__header">
+                <span class="card__label">Variables</span>
+              </div>
+              <div class="card__body var-boxes-container">
+                <div class="var-box-header" aria-hidden="true">
+                  <span class="var-box-header__spacer"></span>
+                  <div class="var-box-header__labels">
+                    <span class="var-box-header__label">Name</span>
+                    <span class="var-box-header__label">Value</span>
+                    <span class="var-box-header__label">± Error</span>
+                  </div>
+                </div>
+                <div class="var-box">
+                  <button type="button" class="var-box__remove remove-variable" aria-label="Remove variable" title="Remove variable">
+                    <svg class="var-box__trash" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                  </button>
+                  <div class="var-box-right">
+                    <div class="variable">
+                      <div class="field">
+                        <input class="variable-name" type="text" placeholder=" " value="" id="var-name-0" title="Variable name used in the expression (e.g. x, m, T)">
+                      </div>
+                      <div class="field">
+                        <input class="variable-value" type="text" placeholder=" " value="" title="Measured value (number)">
+                      </div>
+                      <div class="field">
+                        <input class="variable-error" type="text" placeholder=" " value="" title="Uncertainty (e.g. standard deviation or half division)">
+                      </div>
+                    </div>
+                    <button type="button" class="btn-add add-variable">+ Add variable</button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="card card--expression">
+              <div class="card__header">
+                <span class="card__label">Expression</span>
+              </div>
+              <div class="card__body expression-box">
+                <div class="expression-wrap">
+                  <input id="expression-input" type="text" placeholder="e.g. m * 9.8 * h" value="" class="expression-input" spellcheck="false">
+                </div>
+                <p class="expression-examples">Examples: <button type="button" class="example-chip" data-expr="x + y">x + y</button> <button type="button" class="example-chip" data-expr="x * y / z">x * y / z</button> <button type="button" class="example-chip" data-expr="sqrt(x*x + y*y)">sqrt(x² + y²)</button> <button type="button" class="example-chip" data-expr="m * 9.8 * h">m * 9.8 * h</button></p>
+                <button type="button" class="btn-calc calculate-button">
+                  <span class="btn-calc__text">Calculate</span>
+                  <span class="btn-calc__loader" aria-hidden="true"></span>
+                </button>
+              </div>
+            </section>
+          </div>
+
+          <aside class="readout">
+            <div class="readout__panel results">
+              <div class="readout__header result-header">Result</div>
+              <div class="result-main">
+                <div class="result-value-wrap">
+                  <span class="result-value result-value__num" aria-live="polite">0</span>
+                  <span class="result-value__pm">±</span>
+                  <span class="result-value result-value__err">0</span>
+                </div>
+              </div>
+              <div class="result-breakdown" id="result-breakdown" aria-hidden="true"></div>
+              <div class="result-copy-row">
+                <button type="button" class="result-copy js-copy-result" aria-label="Copy result">Copy result</button>
+                <button type="button" class="result-copy js-copy-value" aria-label="Copy value">Copy value</button>
+                <button type="button" class="result-copy js-copy-error" aria-label="Copy error">Copy error</button>
+              </div>
+            </div>
+            <div class="readout__panel history-panel">
+              <div class="readout__header history-header">History</div>
+              <div class="history-list" id="history-list" role="list"></div>
+            </div>
+          </aside>
+        </div>
+
+        <footer class="app__footer">
+          <nav class="footer__links">
+            <a href="https://github.com/jatizon/uncertainty-propagation-calculator#readme" target="_blank" rel="noopener noreferrer">Documentation</a>
+            <a href="https://github.com/jatizon/uncertainty-propagation-calculator#how-to-use-it" target="_blank" rel="noopener noreferrer">Examples</a>
+          </nav>
+          <span class="app__footer-text">Copyright © 2024 José Tizon</span>
+        </footer>
       </div>
     </div>
-    <div>
-      <div class="expression-box">
-        <input id="expression-input" type="text" value="Enter expression">
-        <button class="calculate-button">Calculate</button>
-      </div>
-      <div class="results">
-        <div class="result-header">Result</div>
-        <div class="result-value">0</div>
-      </div>
-      <div class="footer">Copyright © 2024 José Tizon</div>
-    </div>
+    <script>
+      (function() {
+        var el = document.querySelector('.result-value-wrap');
+        if (!el) return;
+        var timer;
+        var obs = new MutationObserver(function() {
+          el.classList.add('result-value--updated');
+          clearTimeout(timer);
+          timer = setTimeout(function() { el.classList.remove('result-value--updated'); }, 520);
+        });
+        obs.observe(el, { childList: true, subtree: true });
+      })();
+      (function() {
+        document.querySelectorAll('.example-chip').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            var expr = this.getAttribute('data-expr');
+            var input = document.getElementById('expression-input');
+            if (input) { input.value = expr; input.focus(); }
+          });
+        });
+      })();
+      (function() {
+        var wrap = document.querySelector('.result-value-wrap');
+        var numEl = wrap ? wrap.querySelector('.result-value__num') : null;
+        var errEl = wrap ? wrap.querySelector('.result-value__err') : null;
+        function copyToClipboard(btn, text) {
+          if (!text) return;
+          navigator.clipboard.writeText(text);
+        }
+        document.querySelectorAll('.js-copy-result').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            if (!wrap) return;
+            var text = wrap.textContent.replace(/\s+/g, ' ').trim();
+            copyToClipboard(btn, text);
+          });
+        });
+        document.querySelectorAll('.js-copy-value').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            if (!numEl) return;
+            copyToClipboard(btn, (numEl.textContent || '').trim());
+          });
+        });
+        document.querySelectorAll('.js-copy-error').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            if (!errEl) return;
+            copyToClipboard(btn, (errEl.textContent || '').trim());
+          });
+        });
+      })();
+      (function() {
+        var modal = document.getElementById('support-modal');
+        var openBtn = document.querySelector('.js-open-support-modal');
+        var closeBtns = document.querySelectorAll('.js-close-support-modal');
+        if (!modal || !openBtn) return;
+        function openModal() {
+          modal.classList.add('support-modal--open');
+          modal.setAttribute('aria-hidden', 'false');
+          document.body.style.overflow = 'hidden';
+        }
+        function closeModal() {
+          modal.classList.remove('support-modal--open');
+          modal.setAttribute('aria-hidden', 'true');
+          document.body.style.overflow = '';
+        }
+        openBtn.addEventListener('click', openModal);
+        closeBtns.forEach(function(btn) { btn.addEventListener('click', closeModal); });
+        modal.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
+        var cfg = window.APP_CONFIG || {};
+        var stripeGeneralLink = document.getElementById('support-stripe-general-link');
+        if (stripeGeneralLink && cfg.stripeGeneralPaymentLink) stripeGeneralLink.href = cfg.stripeGeneralPaymentLink;
+        if (stripeGeneralLink && (!stripeGeneralLink.href || stripeGeneralLink.href === '#')) stripeGeneralLink.addEventListener('click', function(e) { e.preventDefault(); });
+      })();
+      (function() {
+        function updateField(input) {
+          if (!input.matches || !input.matches('.field input')) return;
+          var v = (input.value || '').trim();
+          input.parentElement.classList.toggle('field--filled', v !== '');
+          input.parentElement.classList.toggle('field--focused', input.matches(':focus'));
+        }
+        document.body.addEventListener('focus', function(e) { if (e.target.matches('.field input')) updateField(e.target); }, true);
+        document.body.addEventListener('blur', function(e) { if (e.target.matches('.field input')) updateField(e.target); }, true);
+        document.body.addEventListener('input', function(e) { if (e.target.matches('.field input')) updateField(e.target); });
+        document.querySelectorAll('.field input').forEach(updateField);
+      })();
+    </script>
   </body>
 </html>
